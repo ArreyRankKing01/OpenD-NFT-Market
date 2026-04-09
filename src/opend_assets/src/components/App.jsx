@@ -1,14 +1,44 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import "bootstrap/dist/css/bootstrap.min.css";
-import homeImage from "../../assets/home-img.png";
+import Item from "./Item";
+import Minter from "./Minter";
 
-function App() {
+function App({ currentUser, opend, nft }) {
+  const [ownedNFTs, setOwnedNFTs] = useState([]);
+
+  useEffect(() => {
+    const fetchNFTs = async () => {
+      try {
+        const nfts = await opend.getOwnedNFTs(currentUser);
+        setOwnedNFTs(nfts);
+      } catch (error) {
+        console.error("Error fetching NFTs:", error);
+      }
+    };
+
+    fetchNFTs();
+  }, [currentUser, opend]);
+
   return (
     <div className="App">
       <Header />
-      <img className="bottom-space" src={homeImage} />
+
+      {/* Minter Component for creating new NFTs */}
+      <Minter opend={opend} currentUser={currentUser} />
+
+      {/* List of owned NFTs */}
+      <div className="nft-gallery">
+        {ownedNFTs.length === 0 ? (
+          <p>You don't own any NFTs yet.</p>
+        ) : (
+          ownedNFTs.map((nftId) => (
+            <Item key={nftId.toText()} id={nftId} opend={opend} nft={nft} />
+          ))
+        )}
+      </div>
+
       <Footer />
     </div>
   );

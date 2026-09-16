@@ -1,133 +1,284 @@
-Copyright 2022 London App Brewery LTD (www.appbrewery.com)
+# OpenD NFT Market
 
-The code in this tutorial project is licended under the Apache License, Version 2.0 (the "License");
-you may not use this project except in compliance with the License.
-You may obtain a copy of the License at
+OpenD is a decentralized NFT marketplace built on the Internet Computer.
 
-    http://www.apache.org/licenses/LICENSE-2.0
+The project combines Motoko canisters with a React frontend to handle NFT creation, ownership, listings, and marketplace interactions. The frontend communicates with Internet Computer canisters through the DFINITY agent libraries.
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+## What It Does
 
-Here is the TL;DR version of the above licence:
-https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)
+OpenD provides the basic pieces needed for an NFT marketplace:
 
-# To Install and Run the Project
+* Mint NFTs
+* Store NFT ownership on-chain
+* List NFTs for sale
+* View marketplace listings
+* Buy and sell NFTs
+* Connect the frontend to Internet Computer canisters
+* Work with NFT and token canisters
+* Run the complete application locally using DFX
 
-1. start local dfx
+The project is designed around the Internet Computer's canister architecture rather than a traditional centralized backend.
 
+## Tech Stack
+
+### Blockchain
+
+* Internet Computer
+* Motoko
+* DFX
+
+### Frontend
+
+* React
+* React Router
+* React Bootstrap
+* Bootstrap
+* TypeScript
+* Webpack
+
+### Internet Computer Integration
+
+* `@dfinity/agent`
+* `@dfinity/auth-client`
+* `@dfinity/identity`
+* `@dfinity/principal`
+* Candid-generated canister declarations
+
+## Project Architecture
+
+The application is split into three main canisters.
+
+```text
+OpenD-NFT-Market
+│
+├── opend
+│   └── NFT marketplace canister
+│
+├── nft
+│   └── NFT canister
+│
+└── opend_assets
+    └── React frontend / static assets
 ```
+
+The canister configuration is defined in `dfx.json`. The `opend_assets` canister depends on the `opend` canister and serves the frontend application.
+
+## How the Application Works
+
+The frontend communicates with the Motoko canisters through the DFINITY agent.
+
+A typical marketplace flow is:
+
+```text
+User
+ │
+ ▼
+React Frontend
+ │
+ ▼
+DFINITY Agent
+ │
+ ├──────────────► OpenD Canister
+ │                    │
+ │                    ├── Mint
+ │                    ├── List
+ │                    ├── Buy
+ │                    └── Ownership
+ │
+ └──────────────► NFT / Token Canister
+```
+
+NFT information and marketplace operations are handled by the canisters, while the React application provides the interface users interact with.
+
+## Project Structure
+
+```text
+OpenD-NFT-Market/
+│
+├── src/
+│   ├── opend/
+│   │   └── main.mo
+│   │
+│   ├── NFT/
+│   │   └── nft.mo
+│   │
+│   └── opend_assets/
+│       ├── assets/
+│       └── src/
+│           ├── index.html
+│           └── ...
+│
+├── dfx.json
+├── package.json
+├── package-lock.json
+├── tsconfig.json
+├── webpack.config.js
+├── .gitignore
+└── README.md
+```
+
+## Requirements
+
+Before running the project locally, install:
+
+* Node.js
+* npm
+* DFX
+* Git
+
+The project currently declares DFX `0.9.3` in `dfx.json`.
+
+## Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/ArreyRankKing01/OpenD-NFT-Market.git
+```
+
+Move into the project:
+
+```bash
+cd OpenD-NFT-Market
+```
+
+Install the frontend dependencies:
+
+```bash
+npm install
+```
+
+## Run the Internet Computer Locally
+
+Start the local Internet Computer replica:
+
+```bash
 dfx start --clean
 ```
 
-2. Run NPM server
+In another terminal, deploy the canisters:
 
+```bash
+dfx deploy
 ```
+
+After deployment, start the frontend development server:
+
+```bash
 npm start
 ```
 
-3. Deploy canisters
+The project's frontend script uses Webpack Dev Server, while the `copy:types` script prepares the generated canister declarations used by the frontend.
 
-```
-dfx deploy --argument='("CryptoDunks #123", principal "7pcey-gv5ga-zclt3-cgm7a-qgqlz-kb4vi-4pmva-zqq5o-ymhvu-4plfq-3ae", (vec {137; 80; 78; 71; 13; 10; 26; 10; 0; 0; 0; 13; 73; 72; 68; 82; 0; 0; 0; 10; 0; 0; 0; 10; 8; 6; 0; 0; 0; 141; 50; 207; 189; 0; 0; 0; 1; 115; 82; 71; 66; 0; 174; 206; 28; 233; 0; 0; 0; 68; 101; 88; 73; 102; 77; 77; 0; 42; 0; 0; 0; 8; 0; 1; 135; 105; 0; 4; 0; 0; 0; 1; 0; 0; 0; 26; 0; 0; 0; 0; 0; 3; 160; 1; 0; 3; 0; 0; 0; 1; 0; 1; 0; 0; 160; 2; 0; 4; 0; 0; 0; 1; 0; 0; 0; 10; 160; 3; 0; 4; 0; 0; 0; 1; 0; 0; 0; 10; 0; 0; 0; 0; 59; 120; 184; 245; 0; 0; 0; 113; 73; 68; 65; 84; 24; 25; 133; 143; 203; 13; 128; 48; 12; 67; 147; 94; 97; 30; 24; 0; 198; 134; 1; 96; 30; 56; 151; 56; 212; 85; 68; 17; 88; 106; 243; 241; 235; 39; 42; 183; 114; 137; 12; 106; 73; 236; 105; 98; 227; 152; 6; 193; 42; 114; 40; 214; 126; 50; 52; 8; 74; 183; 108; 158; 159; 243; 40; 253; 186; 75; 122; 131; 64; 0; 160; 192; 168; 109; 241; 47; 244; 154; 152; 112; 237; 159; 252; 105; 64; 95; 48; 61; 12; 3; 61; 167; 244; 38; 33; 43; 148; 96; 3; 71; 8; 102; 4; 43; 140; 164; 168; 250; 23; 219; 242; 38; 84; 91; 18; 112; 63; 0; 0; 0; 0; 73; 69; 78; 68; 174; 66; 96; 130;}))'
-```
+## Local Development
 
-4. Head to localhost
+Once the local replica and frontend are running, the application can be accessed through the local development URL provided by the frontend server.
 
-http://localhost:8080/
+To see the deployed canisters:
 
-# Minter Else HTML
-
-```
- <div className="minter-container">
-        <h3 className="Typography-root makeStyles-title-99 Typography-h3 form-Typography-gutterBottom">
-          Minted!
-        </h3>
-        <div className="horizontal-center">
-        </div>
-      </div>
-
+```bash
+dfx canister status opend
+dfx canister status nft
+dfx canister status opend_assets
 ```
 
-# Loader HTML
+To get a canister ID:
 
-```
-<div className="lds-ellipsis">
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
-```
-
-# Button HTML
-
-```
-<div className="Chip-root makeStyles-chipBlue-108 Chip-clickable">
-            <span
-              onClick={}
-              className="form-Chip-label"
-            >
-              Sell
-            </span>
-            </div>
-```
-
-# Price Input HTML
-
-```
-<input
-        placeholder="Price in DANG"
-        type="number"
-        className="price-input"
-        value={}
-        onChange={}
-      />
-```
-
-# Price Label HTML
-
-```
-<div className="disButtonBase-root disChip-root makeStyles-price-23 disChip-outlined">
-          <span className="disChip-label">23 DANG</span>
-        </div>
-```
-
-# Creating NFT for Testing
-
-1. Mint an NFT on the command line to get NFT into mapOfNFTs:
-
-```
-dfx canister call opend mint '(vec {137; 80; 78; 71; 13; 10; 26; 10; 0; 0; 0; 13; 73; 72; 68; 82; 0; 0; 0; 10; 0; 0; 0; 10; 8; 6; 0; 0; 0; 141; 50; 207; 189; 0; 0; 0; 1; 115; 82; 71; 66; 0; 174; 206; 28; 233; 0; 0; 0; 68; 101; 88; 73; 102; 77; 77; 0; 42; 0; 0; 0; 8; 0; 1; 135; 105; 0; 4; 0; 0; 0; 1; 0; 0; 0; 26; 0; 0; 0; 0; 0; 3; 160; 1; 0; 3; 0; 0; 0; 1; 0; 1; 0; 0; 160; 2; 0; 4; 0; 0; 0; 1; 0; 0; 0; 10; 160; 3; 0; 4; 0; 0; 0; 1; 0; 0; 0; 10; 0; 0; 0; 0; 59; 120; 184; 245; 0; 0; 0; 113; 73; 68; 65; 84; 24; 25; 133; 143; 203; 13; 128; 48; 12; 67; 147; 94; 97; 30; 24; 0; 198; 134; 1; 96; 30; 56; 151; 56; 212; 85; 68; 17; 88; 106; 243; 241; 235; 39; 42; 183; 114; 137; 12; 106; 73; 236; 105; 98; 227; 152; 6; 193; 42; 114; 40; 214; 126; 50; 52; 8; 74; 183; 108; 158; 159; 243; 40; 253; 186; 75; 122; 131; 64; 0; 160; 192; 168; 109; 241; 47; 244; 154; 152; 112; 237; 159; 252; 105; 64; 95; 48; 61; 12; 3; 61; 167; 244; 38; 33; 43; 148; 96; 3; 71; 8; 102; 4; 43; 140; 164; 168; 250; 23; 219; 242; 38; 84; 91; 18; 112; 63; 0; 0; 0; 0; 73; 69; 78; 68; 174; 66; 96; 130;}, "CryptoDunks #123")'
-```
-
-2. List the item into mapOfListings:
-
-```
-dfx canister call opend listItem '(principal "renrk-eyaaa-aaaaa-aaada-cai", 2)'
-```
-
-3. Get OpenD canister ID:
-
-```
+```bash
 dfx canister id opend
 ```
 
-4. Transfer NFT to OpenD:
+## NFT Marketplace Flow
 
+The basic NFT workflow is:
+
+### 1. Mint
+
+An NFT is created through the NFT canister and assigned to an owner.
+
+### 2. List
+
+The owner can create a marketplace listing for the NFT.
+
+### 3. Browse
+
+The frontend reads marketplace data from the canister and displays available NFTs.
+
+### 4. Buy
+
+A buyer interacts with the marketplace through the frontend to purchase a listed NFT.
+
+### 5. Ownership
+
+After a successful transaction, ownership of the NFT is updated on-chain.
+
+## Frontend and Canisters
+
+The frontend uses DFINITY's JavaScript libraries to communicate with the Internet Computer.
+
+The project includes:
+
+```text
+@dfinity/agent
+@dfinity/auth-client
+@dfinity/identity
+@dfinity/principal
 ```
-dfx canister call renrk-eyaaa-aaaaa-aaada-cai transferOwnership '(principal "ryjl3-tyaaa-aaaaa-aaaba-cai", true)'
+
+along with React, React Router, React-Bootstrap, TypeScript, and Webpack.
+
+The frontend can therefore interact with deployed canisters without requiring a traditional REST API or centralized backend.
+
+## Build
+
+To create a production frontend build:
+
+```bash
+npm run build
 ```
 
-# Conneting to the Token Canister
+The build process also prepares the generated canister declarations required by the frontend.
 
-1. Copy over the token declarations folder
+## Development Notes
 
-2. Set the token canister id into the <REPLACE WITH TOKEN CANISTER ID>
+This repository is configured primarily for local Internet Computer development.
 
+The project uses:
+
+```text
+DFX
+Motoko
+React
+Webpack
 ```
-const dangPrincipal = Principal.fromText("<REPLACE WITH TOKEN CANISTER ID>");
-```
+
+and keeps the blockchain logic inside Internet Computer canisters rather than a conventional Node.js backend.
+
+## Current Status
+
+OpenD is a working development project focused on learning and implementing NFT marketplace functionality on the Internet Computer.
+
+The repository is still suitable for further development, including improvements to the marketplace interface, transaction handling, wallet/authentication flow, and deployment configuration.
+
+## Possible Next Steps
+
+Some areas that can be expanded include:
+
+* Improved NFT discovery and filtering
+* Collection pages
+* User profiles
+* Transaction history
+* Marketplace search
+* Better wallet integration
+* NFT metadata management
+* Production deployment
+* Improved transaction feedback
+* Marketplace analytics
+* Additional token/payment integration
+
+## Author
+
+**Arrey Franky**
+
+GitHub:
+https://github.com/ArreyRankKing01
